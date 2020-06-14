@@ -42,4 +42,21 @@ class ProductController extends Controller
             return response()->json(ApiError::errorMessage('An error occurs in creation!', 8181));
         }
     }
+
+    public function update(Request $request, $id)
+    {
+        try {
+            $productData = $request->all();
+            $product = $this->product->find($id);
+            $product->update($productData);
+
+            $returnMessage = ['data' => ['msg' => 'Product updated successfully!']];
+            return response()->json($returnMessage, 201);
+        } catch (\Exception $ex) {
+            if (config('app.debug')) {
+                return response()->json(ApiError::errorMessage($ex->getMessage(), 8181));
+            }
+            return response()->json(ApiError::errorMessage('An error occurs in creation!', 8181));
+        }
+    }
 }
