@@ -21,9 +21,13 @@ class ProductController extends Controller
         return response()->json($this->product->paginate(10));
     }
 
-    public function show(Product $id)
+    public function show($id)
     {
-        $data = ['data' => $id];
+        $product = $this->product->find($id);
+
+        if (!$product) return response()->json(ApiError::errorMessage('Product not find!', 2121), 404);
+
+        $data = ['data' => $product];
         return response()->json($data);
     }
 
@@ -37,9 +41,9 @@ class ProductController extends Controller
             return response()->json($returnMessage, 201);
         } catch (\Exception $ex) {
             if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($ex->getMessage(), 8181));
+                return response()->json(ApiError::errorMessage($ex->getMessage(), 8181), 500);
             }
-            return response()->json(ApiError::errorMessage('An error occurs in creation!', 8181));
+            return response()->json(ApiError::errorMessage('An error occurs in creation!', 8181), 500);
         }
     }
 
@@ -54,9 +58,24 @@ class ProductController extends Controller
             return response()->json($returnMessage, 201);
         } catch (\Exception $ex) {
             if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($ex->getMessage(), 8181));
+                return response()->json(ApiError::errorMessage($ex->getMessage(), 7171), 500);
             }
-            return response()->json(ApiError::errorMessage('An error occurs in creation!', 8181));
+            return response()->json(ApiError::errorMessage('An error occurs in update!', 7171), 500);
+        }
+    }
+
+    public function delete(Product $id)
+    {
+        try {
+            $id->delete();
+
+            $returnMessage = ['data' => ['msg' => 'Product: ' . $id->name . ' deleted successfully!']];
+            return response()->json($returnMessage, 200);
+        } catch (\Exception $ex) {
+            if (config('app.debug')) {
+                return response()->json(ApiError::errorMessage($ex->getMessage(), 6161), 500);
+            }
+            return response()->json(ApiError::errorMessage('An error occurs in delete!', 6161), 500);
         }
     }
 }
